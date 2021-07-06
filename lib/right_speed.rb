@@ -59,15 +59,12 @@ module RightSpeed
     finalizer = nil
     ractors = case worker_type
               when :read
-                workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(getlogger, i, &method(:read_worker))}
-                listener = Ractor.new(getlogger, DEFAULT_PORT, DEFAULT_BACKLOG, workers, &method(:accept_listener))
-                # workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(i, &method(:read_worker))}
-                # listener = Ractor.new(DEFAULT_PORT, DEFAULT_BACKLOG, workers, &method(:accept_listener))
+                workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(i, &method(:read_worker))}
+                listener = Ractor.new(DEFAULT_PORT, DEFAULT_BACKLOG, workers, &method(:accept_listener))
                 [*workers, listener]
               when :accept
                 sock = listener(DEFAULT_PORT, DEFAULT_BACKLOG)
-                workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(getlogger, i, sock.dup, &method(:accept_worker))}
-                # workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(i, sock.dup, &method(:accept_worker))}
+                workers = DEFAULT_WORKERS.times.map{|i| Ractor.new(i, sock.dup, &method(:accept_worker))}
                 finalizer = lambda { sock.close rescue nil }
                 workers
               else
@@ -87,9 +84,8 @@ module RightSpeed
     LOG.error "Unknown error on #listener\n#{e.full_message}"
   end
 
-  def self.accept_worker(logger, index, sock)
-  # def self.accept_worker(index, sock)
-    ### logger = getlogger
+  def self.accept_worker(index, sock)
+    logger = getlogger
     while conn = sock.accept
       begin
         data = conn.read
@@ -103,9 +99,8 @@ module RightSpeed
     logger.error "[read|#{index}] Error on worker#accept_worker\n#{e.full_message}"
   end
 
-  def self.accept_listener(logger, listen_port, backlog, workers)
-  # def self.accept_listener(listen_port, backlog, workers)
-    ### logger = getlogger
+  def self.accept_listener(listen_port, backlog, workers)
+    logger = getlogger
     workers_num = workers.size
     begin
       sock = TCPServer.open(listen_port)
@@ -123,9 +118,8 @@ module RightSpeed
     logger.error "Error on a worker#listener\n#{e.full_message}"
   end
 
-  def self.read_worker(logger, index)
-  # def self.read_worker(index)
-    ### logger = getlogger
+  def self.read_worker(index)
+    logger = getlogger
     # read and parse requests from sockets in Async manner (Fiber#scheduler ?)
     # https://github.com/fluent/fluentd/blob/master/lib/fluent/plugin/in_http.rb
     while conn = Ractor.receive
