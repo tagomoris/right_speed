@@ -1,0 +1,95 @@
+#!ruby
+# frozen_string_literal: true
+
+require_relative "../lib/right_speed/env"
+require_relative "../lib/right_speed/server"
+require "getoptlong"
+
+module RightSpeed
+  module Command
+    Options = Struct.new(
+      :port, :backlog,
+      :workers, :worker_type,
+      keyword_init: true,
+    )
+
+    COMMAND_OPTIONS = [
+      ['--port', '-p', GetoptLong::REQUIRED_ARGUMENT],
+      ['--backlog', GetoptLong::REQUIRED_ARGUMENT],
+      ['--workers', GetoptLong::REQUIRED_ARGUMENT],
+      ['--worker-type', GetoptLong::REQUIRED_ARGUMENT],
+      ['--help', GetoptLong::NO_ARGUMENT],
+    ]
+
+    DEFAULT_PORT = 8228
+    DEFAULT_BACKLOG = 1000
+    DEFAULT_WORKERS = Env.processors
+    DEFAULT_WORKER_TYPE = :read
+
+    def self.show_help(error: false, error_message: nil)
+      STDERR.puts(error_message, "\n") if error_message
+      STDERR.puts <<~EOS
+        Usage: right_speed [options]
+
+        OPTIONS
+          --port, -p PORT       The port number to listen (default: #{DEFAULT_PORT}
+          --backlog NUM         The number of backlog (default: #{DEFAULT_BACKLOG})
+          --workers NUM         The number of Ractors (default: CPU cores, #{DEFAULT_WORKERS})
+          --worker-type TYPE    The type of workers, available options are read/accept (default: #{DEFAULT_WORKER_TYPE})
+          --help                Show this message
+      EOS
+      exit(error ? 1 : 0)
+    end
+
+    def self.integer_value(value, name)
+      Integer(value)
+    rescue
+      show_help(error: true, error_message: "#{name} should be an Integer: #{value}")
+    end
+
+    def self.parse_command_line_options
+      optparse = GetoptLong.new
+      optparse.set_options(*COMMAND_OPTIONS)
+      options = Options.new(
+        port: DEFAULT_PORT,
+        backlog: DEFAULT_BACKLOG,
+        workers: DEFAULT_WORKERS,
+        worker_type: DEFAULT_WORKER_TYPE,
+      )
+      worker_type = :read
+      optparse.each_option do |name, value|
+        case name
+        when '--port'
+          options.port = integer_value(value, "Port number")
+        when '--backlog'
+          options.backlog = integer_value(value, "Backlog")
+        when '--workers'
+          options.workers = integer_value(value, "Workers")
+        when '--worker-type'
+          options.worker_type = value.to_sym
+        when '--help'
+          show_help
+        else
+          show_help(error: true, error_messsage: "Unknown option: #{name}")
+        end
+      end
+      options
+    end
+
+    def self.start
+      options = parse_command_line_options
+      server = begin
+                 RightSpeed::Server.new(
+                   port: options.port,
+                   backlog: options.backlog,
+                   workers: options.workers,
+                   worker_type: options.worker_type,
+                 )
+               rescue => e
+                 show_help(error: true, error_message: "Failed to launch the server, " + e.message)
+               end
+      server.run
+    end
+  end
+end
+
