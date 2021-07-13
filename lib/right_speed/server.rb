@@ -18,14 +18,11 @@ module RightSpeed
     def logger # TODO: move to RightSpeed::Worker
       return @logger if @logger
       logger = Logger.new($stderr)
-      logger.formatter = lambda {|severity, datetime, progname, msg| "[#{datetime}] #{msg}" }
+      logger.formatter = lambda {|severity, datetime, progname, msg| "[#{datetime}] #{msg}\n" }
       logger
     end
 
     def run
-      # TODO: XXXXXXXXXXXXXXXXXXXXXXXXXX Something seems wrong now
-      # The launch command stops immediately
-      # $ bundle exec ruby bin/right_speed -p 8080
       logger.info "Starting RightSpeed server, type #{@worker_type}, workers: #{@workers}"
       ractors, finalizer = case @worker_type
                            when :read

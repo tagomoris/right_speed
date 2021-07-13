@@ -93,3 +93,4 @@ module RightSpeed
   end
 end
 
+RightSpeed::Command.start
