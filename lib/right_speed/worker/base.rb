@@ -1,16 +1,12 @@
+require_relative "../logger"
+require_relative "../handler"
+
 module RightSpeed
   module Worker
     class Base
-      def self.logger
-        return Ractor.current[:logger] if Ractor.current[:logger]
-        logger = Logger.new($stderr)
-        logger.formatter = lambda {|severity, datetime, progname, msg| "[#{datetime}] #{msg}\n" }
-        Ractor.current[:logger] = logger
-        logger
-      end
-
-      def initialize(id:)
+      def initialize(id:, app:)
         @id = id
+        @handler = Handler.new(app)
         @ractor = nil
         # TODO: initialization of webapp
       end

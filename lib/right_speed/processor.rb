@@ -41,7 +41,7 @@ module RightSpeed
     class ReadProcessor < Base
       def initialize(workers)
         @worker_num = workers
-        @workers = workers.times.map{|i| Worker::Reader.new(id: i)}
+        @workers = workers.times.map{|i| Worker::Reader.new(id: i, app: nil)} # TODO: app
         @counter = 0
       end
 
@@ -67,7 +67,7 @@ module RightSpeed
     class AcceptProcessor < Base
       def initialize(workers)
         @worker_num = workers
-        @workers = workers.times.map{|i| Worker::Accepter.new(id: i) }
+        @workers = workers.times.map{|i| Worker::Accepter.new(id: i, app: nil) } # TODO: app
       end
 
       def configure(listener:)

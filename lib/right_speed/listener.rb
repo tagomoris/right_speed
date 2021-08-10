@@ -1,4 +1,10 @@
+# frozen_string_literal: true
+
+require_relative "logger"
+
 module RightSpeed
+  DEFAULT_LISTEN_ADDRESS = "0.0.0.0"
+
   module Listener
     def self.setup(listener_type:, port:, backlog:)
       case listener_type
@@ -20,7 +26,7 @@ module RightSpeed
 
       def run(_processor)
         @running = true
-        @sock = TCPServer.open(listen_port)
+        @sock = TCPServer.open(DEFAULT_LISTEN_ADDRESS, listen_port)
         @sock.listen(backlog)
         @sock
       end
@@ -41,9 +47,15 @@ module RightSpeed
       def run(processor)
         @running = true
         @ractor = Ractor.new(@port, @backlog, processor) do |port, backlog, processor|
-          sock = TCPServer.open(port)
+          logger = RightSpeed.logger
+          sock = TCPServer.open(DEFAULT_LISTEN_ADDRESS, port)
           sock.listen(backlog)
+          logger.info { "listening the port #{port}" }
           while conn = sock.accept
+            logger.debug {
+              _, peer_port, _, peer_addr = conn.peeraddr # proto, port, hostname, ipaddr
+              "accepted a connection on the port #{port}, client: #{peer_addr}:#{peer_port}"
+            }
             processor.process(conn)
           end
         end

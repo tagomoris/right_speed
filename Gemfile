@@ -8,3 +8,6 @@ gemspec
 gem "rake", "~> 13.0"
 
 gem "test-unit", "~> 3.0"
+
+# The updated libraries for ractor-safety
+gem "http_parser.rb", git: 'git@github.com:tagomoris/http_parser.rb.git', branch: 'make-ractor-safe'

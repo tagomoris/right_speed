@@ -26,6 +26,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "webrick", "~> 1.7"
+  spec.add_runtime_dependency "rack", "~> 1.3"
   spec.add_runtime_dependency "concurrent-ruby", "~> 1.1"
+  spec.add_runtime_dependency "http_parser.rb", "~> 0.7"
+
   spec.add_development_dependency "test-unit"
 end
