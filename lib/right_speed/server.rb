@@ -6,12 +6,30 @@ require "webrick"
 
 require_relative "processor"
 require_relative "listener"
+require_relative "env"
+require_relative "ractor_helper"
 
 module RightSpeed
   class Server
-    def initialize(port:, ru:, workers:, worker_type:, backlog:)
+    DEFAULT_HOST = "127.0.0.1"
+    DEFAULT_PORT = 8080
+    DEFAULT_WORKER_TYPE = :read
+    DEFAULT_WORKERS = Env.processors
+    DEFAULT_BACKLOG = 100
+
+    attr_reader :config_hooks
+
+    def initialize(
+          app:,
+          host: DEFAULT_HOST,
+          port: DEFAULT_PORT,
+          workers: DEFAULT_WORKERS,
+          worker_type: DEFAULT_WORKER_TYPE,
+          backlog: DEFAULT_BACKLOG
+        )
+      @host = host
       @port = port
-      @ru = ru
+      @app = app
       @workers = workers
       @worker_type = worker_type
       @listener_type = case @worker_type
@@ -26,8 +44,8 @@ module RightSpeed
 
     def run
       begin
-        processor = Processor.setup(ru: @ru, worker_type: @worker_type, workers: @workers)
-        listener = Listener.setup(listener_type: @listener_type, port: @port, backlog: @backlog)
+        processor = Processor.setup(app: @app, worker_type: @worker_type, workers: @workers)
+        listener = Listener.setup(listener_type: @listener_type, host: @host, port: @port, backlog: @backlog)
         processor.configure(listener: listener)
         processor.run
         listener.wait

@@ -20,7 +20,7 @@ jobs:
       run: |
         bundle exec ruby bin/right_speed -c snippets/test.ru &
         sleep 5
-        output=$(curl -s http://127.0.0.1:8228)
+        output=$(curl -s http://127.0.0.1:8080/)
         kill %1
         echo "Output: $output"
         test "$output" = "Yaaay"

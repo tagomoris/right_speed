@@ -7,8 +7,14 @@ require_relative 'worker/reader'
 
 module RightSpeed
   module Processor
-    def self.setup(ru:, worker_type:, workers:)
-      app = build_app(ru)
+    def self.setup(app:, worker_type:, workers:)
+      app = if app.respond_to?(:call)
+              app
+            elsif app.is_a?(String) # rackup config path
+              build_app(app)
+            else
+              raise "Unexpected app #{app}"
+            end
       handler = Ractor.make_shareable(Handler.new(app))
       case worker_type
       when :read

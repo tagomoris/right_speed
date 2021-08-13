@@ -23,7 +23,7 @@ module RightSpeed
     ]
 
     DEFAULT_RACKUP_PATH = 'config.ru'
-    DEFAULT_PORT = 8228
+    DEFAULT_PORT = 8080
     DEFAULT_BACKLOG = 1000
     DEFAULT_WORKERS = Env.processors
     DEFAULT_WORKER_TYPE = :read
