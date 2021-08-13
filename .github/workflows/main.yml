@@ -22,7 +22,8 @@ jobs:
         sleep 5
         output=$(curl -s http://127.0.0.1:8228)
         kill %1
-        test "$output" = "Yaay"
+        echo "Output: $output"
+        test "$output" = "Yaaay"
     - name: Run rackup
       run: |
         echo "to be implemented later"
