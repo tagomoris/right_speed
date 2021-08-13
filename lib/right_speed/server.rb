@@ -39,10 +39,20 @@ module RightSpeed
                          :listen
                        end
       @backlog = backlog
+      @config_hooks = []
       @logger = nil
     end
 
     def run
+      @config_hooks.each do |hook|
+        if hook.respond_to?(:call)
+          hook.call
+        end
+      end
+
+      RactorHelper.uri_hook
+      RactorHelper.rack_hook
+
       begin
         processor = Processor.setup(app: @app, worker_type: @worker_type, workers: @workers)
         listener = Listener.setup(listener_type: @listener_type, host: @host, port: @port, backlog: @backlog)
