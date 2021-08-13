@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "HTTP server, which provides traffic under the support of Ractor"
   spec.homepage      = "https://github.com/tagomoris/right_speed"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.2")
 
   spec.metadata["homepage_uri"] = spec.homepage
 
