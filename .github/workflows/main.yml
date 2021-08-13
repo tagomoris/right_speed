@@ -16,3 +16,13 @@ jobs:
         gem install bundler
         bundle install
         bundle exec rake
+    - name: Run the actual server
+      run: |
+        bundle exec ruby bin/right_speed -c snippets/test.ru &
+        sleep 5
+        output=$(curl -s http://127.0.0.1:8228)
+        kill %1
+        test "$output" = "Yaay"
+    - name: Run rackup
+      run: |
+        echo "to be implemented later"
