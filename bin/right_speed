@@ -87,7 +87,7 @@ module RightSpeed
       server = begin
                  RightSpeed::Server.new(
                    port: options.port,
-                   ru: options.rackup,
+                   app: options.rackup,
                    backlog: options.backlog,
                    workers: options.workers,
                    worker_type: options.worker_type,
