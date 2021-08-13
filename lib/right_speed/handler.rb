@@ -40,8 +40,8 @@ module RightSpeed
         'rack.url_scheme' => 'http', # http or https, depending on the request URL.
         'rack.input' => request.body, # The input stream.
         'rack.errors' => nil, # The error stream.
-        'rack.multithread' => false,
-        'rack.multiprocess' => true,
+        'rack.multithread' => true,
+        'rack.multiprocess' => false,
         'rack.run_once' => false,
         'rack.hijack?' => false, # https://github.com/rack/rack/blob/master/SPEC.rdoc#label-Hijacking
         ### Optional Rack keys
@@ -61,7 +61,6 @@ module RightSpeed
         # and returning an IO-like object that responds to #<< and optionally #rewind. This factory will be used to instantiate
         # the tempfile for each multipart form file upload field, rather than the default class of Tempfile.
       }
-      pp(ractor: Ractor.current.object_id, env: env)
       status, headers, body = @app.call(env)
       Response.new(http_version: request.http_version, status_code: status, headers: headers, body: body)
     end
