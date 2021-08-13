@@ -25,5 +25,11 @@ jobs:
         echo "Output: $output"
         test "$output" = "Yaaay"
     - name: Run rackup
+      # Using production not to use middlewares for development (lint, etc)
       run: |
-        echo "to be implemented later"
+        bundle exec rackup -s right_speed -c snippets/test.ru -E production -O Host=127.0.0.1 -O Port=8081 &
+        sleep 5
+        output=$(curl -s http://127.0.0.1:8081/)
+        kill %1
+        echo "Output: $output"
+        test "$output" = "Yaaay"
