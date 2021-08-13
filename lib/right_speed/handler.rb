@@ -24,14 +24,14 @@ module RightSpeed
         # TODO: replace the keys using constants: https://github.com/rack/rack/blob/master/lib/rack.rb
         'HTTP_VERSION' => request.http_version,
         'PATH_INFO' => request.path_info,
-        'QUERY_STRING' => request.query_string,
+        'QUERY_STRING' => request.query_string || "",
         'REMOTE_ADDR' => client.addr,
         'REQUEST_METHOD' => request.http_method,
         'REQUEST_PATH' => request.path_info,
         'REQUEST_URI' => request.request_uri,
         'SCRIPT_NAME' => "",
         'SERVER_NAME' => client.server_addr,
-        'SERVER_PORT' => client.server_port,
+        'SERVER_PORT' => client.server_port.to_s,
         'SERVER_PROTOCOL' => request.http_version,
         'SERVER_SOFTWARE' => RightSpeed::SOFTWARE_NAME,
         **request.headers_in_env_style,
@@ -39,7 +39,7 @@ module RightSpeed
         'rack.version' => RightSpeed::RACK_VERSION,
         'rack.url_scheme' => 'http', # http or https, depending on the request URL.
         'rack.input' => request.body, # The input stream.
-        'rack.errors' => nil, # The error stream.
+        'rack.errors' => $stderr, # The error stream.
         'rack.multithread' => true,
         'rack.multiprocess' => false,
         'rack.run_once' => false,
@@ -71,6 +71,9 @@ module RightSpeed
       def initialize(conn)
         _, @port, _, @addr = conn.peeraddr
         _, @server_port, _, @server_addr = conn.addr
+        if @server_addr == "::1"
+          @server_addr = "localhost"
+        end
       end
     end
 
