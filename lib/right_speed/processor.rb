@@ -1,14 +1,29 @@
+# frozen_string_literal: true
+
+require 'rack/builder'
+
 require_relative 'worker/accepter'
 require_relative 'worker/reader'
 
 module RightSpeed
   module Processor
-    def self.setup(worker_type:, workers:)
+    def self.setup(ru:, worker_type:, workers:)
+      app = Rack::Builder.parse_file(ru)
+      app = if app.respond_to?(:call)
+              app
+            elsif app.is_a?(Array) && app[0].respond_to?(:call)
+              # Rack::Builder returns [app, options] but options will be deprecated
+              app[0]
+            else
+              raise "Failed to build Rack app from #{ru}: #{app}"
+            end
+      handler = Ractor.make_shareable(Handler.new(app))
+
       case worker_type
       when :read
-        ReadProcessor.new(workers)
+        ReadProcessor.new(workers, handler)
       when :accept
-        AcceptProcessor.new(workers)
+        AcceptProcessor.new(workers, handler)
       else
         raise "Unknown worker type #{worker_type}"
       end
@@ -39,9 +54,10 @@ module RightSpeed
     end
 
     class ReadProcessor < Base
-      def initialize(workers)
+      def initialize(workers, handler)
         @worker_num = workers
-        @workers = workers.times.map{|i| Worker::Reader.new(id: i, app: nil)} # TODO: app
+        @handler = handler
+        @workers = workers.times.map{|i| Worker::Reader.new(id: i, handler: @handler)}
         @counter = 0
       end
 
@@ -65,8 +81,9 @@ module RightSpeed
     end
 
     class AcceptProcessor < Base
-      def initialize(workers)
+      def initialize(workers, handler)
         @worker_num = workers
+        @handler = handler
         @workers = workers.times.map{|i| Worker::Accepter.new(id: i, app: nil) } # TODO: app
       end
 

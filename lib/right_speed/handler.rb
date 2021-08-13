@@ -21,6 +21,7 @@ module RightSpeed
     def process(session, client, request)
       # https://github.com/rack/rack/blob/master/SPEC.rdoc
       env = {
+        # TODO: replace the keys using constants: https://github.com/rack/rack/blob/master/lib/rack.rb
         'HTTP_VERSION' => request.http_version,
         'PATH_INFO' => request.path_info,
         'QUERY_STRING' => request.query_string,
@@ -60,9 +61,9 @@ module RightSpeed
         # and returning an IO-like object that responds to #<< and optionally #rewind. This factory will be used to instantiate
         # the tempfile for each multipart form file upload field, rather than the default class of Tempfile.
       }
-      pp(env: env)
-      # status, headers, body = @app.call(env)
-      Response.new(http_version: request.http_version, status_code: 200, headers: {"X-Yay" => "yay"}, body: ["Oooooooookay"])
+      pp(ractor: Ractor.current.object_id, env: env)
+      status, headers, body = @app.call(env)
+      Response.new(http_version: request.http_version, status_code: status, headers: headers, body: body)
     end
 
     class Client

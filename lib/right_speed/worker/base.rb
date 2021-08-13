@@ -4,9 +4,9 @@ require_relative "../handler"
 module RightSpeed
   module Worker
     class Base
-      def initialize(id:, app:)
+      def initialize(id:, handler:)
         @id = id
-        @handler = Handler.new(app)
+        @handler = handler
         @ractor = nil
         # TODO: initialization of webapp
       end

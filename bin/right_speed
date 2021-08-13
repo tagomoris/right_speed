@@ -8,12 +8,13 @@ require "getoptlong"
 module RightSpeed
   module Command
     Options = Struct.new(
-      :port, :backlog,
+      :rackup, :port, :backlog,
       :workers, :worker_type,
       keyword_init: true,
     )
 
     COMMAND_OPTIONS = [
+      ['--config', '-c', GetoptLong::REQUIRED_ARGUMENT],
       ['--port', '-p', GetoptLong::REQUIRED_ARGUMENT],
       ['--backlog', GetoptLong::REQUIRED_ARGUMENT],
       ['--workers', GetoptLong::REQUIRED_ARGUMENT],
@@ -21,6 +22,7 @@ module RightSpeed
       ['--help', GetoptLong::NO_ARGUMENT],
     ]
 
+    DEFAULT_RACKUP_PATH = 'config.ru'
     DEFAULT_PORT = 8228
     DEFAULT_BACKLOG = 1000
     DEFAULT_WORKERS = Env.processors
@@ -32,7 +34,8 @@ module RightSpeed
         Usage: right_speed [options]
 
         OPTIONS
-          --port, -p PORT       The port number to listen (default: #{DEFAULT_PORT}
+          --config, -c PATH     The path of the rackup configuration file (default: #{DEFAULT_RACKUP_PATH})
+          --port, -p PORT       The port number to listen (default: #{DEFAULT_PORT})
           --backlog NUM         The number of backlog (default: #{DEFAULT_BACKLOG})
           --workers NUM         The number of Ractors (default: CPU cores, #{DEFAULT_WORKERS})
           --worker-type TYPE    The type of workers, available options are read/accept (default: #{DEFAULT_WORKER_TYPE})
@@ -51,6 +54,7 @@ module RightSpeed
       optparse = GetoptLong.new
       optparse.set_options(*COMMAND_OPTIONS)
       options = Options.new(
+        rackup: DEFAULT_RACKUP_PATH,
         port: DEFAULT_PORT,
         backlog: DEFAULT_BACKLOG,
         workers: DEFAULT_WORKERS,
@@ -59,6 +63,8 @@ module RightSpeed
       worker_type = :read
       optparse.each_option do |name, value|
         case name
+        when '--config'
+          options.rackup = value
         when '--port'
           options.port = integer_value(value, "Port number")
         when '--backlog'
@@ -81,6 +87,7 @@ module RightSpeed
       server = begin
                  RightSpeed::Server.new(
                    port: options.port,
+                   ru: options.rackup,
                    backlog: options.backlog,
                    workers: options.workers,
                    worker_type: options.worker_type,

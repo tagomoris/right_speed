@@ -9,9 +9,9 @@ require_relative "listener"
 
 module RightSpeed
   class Server
-    def initialize(port:, backlog:, workers:, worker_type:)
+    def initialize(port:, ru:, workers:, worker_type:, backlog:)
       @port = port
-      @backlog = backlog
+      @ru = ru
       @workers = workers
       @worker_type = worker_type
       @listener_type = case @worker_type
@@ -20,12 +20,13 @@ module RightSpeed
                        else
                          :listen
                        end
+      @backlog = backlog
       @logger = nil
     end
 
     def run
       begin
-        processor = Processor.setup(worker_type: @worker_type, workers: @workers)
+        processor = Processor.setup(ru: @ru, worker_type: @worker_type, workers: @workers)
         listener = Listener.setup(listener_type: @listener_type, port: @port, backlog: @backlog)
         processor.configure(listener: listener)
         processor.run
