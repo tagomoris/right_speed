@@ -44,6 +44,9 @@ module RightSpeed
     end
 
     def run
+      logger = RightSpeed.logger
+      logger.info { "Start running with #{@workers} workers" }
+
       @config_hooks.each do |hook|
         if hook.respond_to?(:call)
           hook.call
