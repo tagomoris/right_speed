@@ -167,9 +167,9 @@ module RightSpeed
       end
 
       def on_message_complete
-        @logger.debug {
-          "complete to read the request, headers:#{@headers}, body:#{@body}"
-        }
+        # @logger.debug {
+        #   "complete to read the request, headers:#{@headers}, body:#{@body}"
+        # }
         request = Request.new(
           client: @client, http_method: @method, http_version: @parser.http_version,
           request_url: @url, headers: @headers, body: @body

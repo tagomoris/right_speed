@@ -51,10 +51,10 @@ module RightSpeed
           sock.listen(backlog)
           logger.info { "listening #{host}:#{port}" }
           while conn = sock.accept
-            logger.debug {
-              _, peer_port, _, peer_addr = conn.peeraddr # proto, port, hostname, ipaddr
-              "accepted a connection on #{host}:#{port}, client: #{peer_addr}:#{peer_port}"
-            }
+            # logger.debug {
+            #   _, peer_port, _, peer_addr = conn.peeraddr # proto, port, hostname, ipaddr
+            #   "accepted a connection on #{host}:#{port}, client: #{peer_addr}:#{peer_port}"
+            # }
             processor.process(conn)
           end
         end
