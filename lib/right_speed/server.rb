@@ -10,6 +10,8 @@ require_relative "env"
 require_relative "ractor_helper"
 
 module RightSpeed
+  CONFIG_HOOK_KEY = 'right_speed_config_hooks'
+
   class Server
     DEFAULT_HOST = "127.0.0.1"
     DEFAULT_PORT = 8080
@@ -47,7 +49,8 @@ module RightSpeed
       logger = RightSpeed.logger
       logger.info { "Start running with #{@workers} workers" }
 
-      @config_hooks.each do |hook|
+      hooks = @config_hooks + (Ractor.current[RightSpeed::CONFIG_HOOK_KEY] || [])
+      hooks.each do |hook|
         if hook.respond_to?(:call)
           hook.call
         end
