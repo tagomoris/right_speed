@@ -17,7 +17,6 @@ module RightSpeed
     DEFAULT_PORT = 8080
     DEFAULT_WORKER_TYPE = :read
     DEFAULT_WORKERS = Env.processors
-    DEFAULT_BACKLOG = 100
 
     attr_reader :config_hooks
 
@@ -27,7 +26,7 @@ module RightSpeed
           port: DEFAULT_PORT,
           workers: DEFAULT_WORKERS,
           worker_type: DEFAULT_WORKER_TYPE,
-          backlog: DEFAULT_BACKLOG
+          backlog: nil
         )
       @host = host
       @port = port
@@ -61,7 +60,7 @@ module RightSpeed
 
       begin
         processor = Processor.setup(app: @app, worker_type: @worker_type, workers: @workers)
-        listener = Listener.setup(listener_type: @listener_type, host: @host, port: @port, backlog: @backlog)
+        listener = Listener.setup(listener_type: @listener_type, host: @host, port: @port, backlog: nil)
         processor.configure(listener: listener)
         processor.run
         listener.wait

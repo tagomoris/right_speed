@@ -4,7 +4,7 @@ require_relative "logger"
 
 module RightSpeed
   module Listener
-    def self.setup(listener_type:, host:, port:, backlog:)
+    def self.setup(listener_type:, host:, port:, backlog: nil)
       case listener_type
       when :accept
         AcceptListener.new(host, port, backlog)
@@ -26,7 +26,7 @@ module RightSpeed
       def run(_processor)
         @running = true
         @sock = TCPServer.open(@host, @port)
-        @sock.listen(backlog)
+        @sock.listen(@backlog) if @backlog
         @sock
       end
 
@@ -48,7 +48,7 @@ module RightSpeed
         @ractor = Ractor.new(@host, @port, @backlog, processor) do |host, port, backlog, processor|
           logger = RightSpeed.logger
           sock = TCPServer.open(host, port)
-          sock.listen(backlog)
+          sock.listen(backlog) if backlog
           logger.info { "listening #{host}:#{port}" }
           while conn = sock.accept
             # logger.debug {
