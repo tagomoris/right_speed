@@ -151,9 +151,10 @@ module RightSpeed
       # https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/Keep-Alive
 
       def process
-        while @reading
+        while @reading && !@conn.eof?
           @parser << @conn.readline
         end
+        @conn.close # TODO: keep-alive?
       end
 
       def on_headers_complete(headers)
@@ -177,7 +178,6 @@ module RightSpeed
         response = @handler.process(self, @client, request)
         send_response(response)
         @reading = false
-        @conn.close # TODO: keep-alive?
       end
 
       def send_response(response)
