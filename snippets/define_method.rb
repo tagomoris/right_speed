@@ -44,7 +44,7 @@ class Yay
   end
 end
 
-Yay.define_method(:value) { "b" }
+Yay.define_method(:value) { "bbb".freeze }
 
 p(yay: Yay.new.value) #=> "b"
 
@@ -54,3 +54,4 @@ r = Ractor.new do
 end
 
 p(ractor: r.take)
+  
