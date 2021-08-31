@@ -24,7 +24,6 @@ module RightSpeed
 
     DEFAULT_RACKUP_PATH = 'config.ru'
     DEFAULT_PORT = 8080
-    DEFAULT_BACKLOG = 1000
     DEFAULT_WORKERS = Env.processors
     DEFAULT_WORKER_TYPE = :read
 
@@ -36,7 +35,7 @@ module RightSpeed
         OPTIONS
           --config, -c PATH     The path of the rackup configuration file (default: #{DEFAULT_RACKUP_PATH})
           --port, -p PORT       The port number to listen (default: #{DEFAULT_PORT})
-          --backlog NUM         The number of backlog (default: #{DEFAULT_BACKLOG})
+          --backlog NUM         The number of backlog
           --workers NUM         The number of Ractors (default: CPU cores, #{DEFAULT_WORKERS})
           --worker-type TYPE    The type of workers, available options are read/accept (default: #{DEFAULT_WORKER_TYPE})
           --help                Show this message
@@ -56,7 +55,7 @@ module RightSpeed
       options = Options.new(
         rackup: DEFAULT_RACKUP_PATH,
         port: DEFAULT_PORT,
-        backlog: DEFAULT_BACKLOG,
+        backlog: nil,
         workers: DEFAULT_WORKERS,
         worker_type: DEFAULT_WORKER_TYPE,
       )
