@@ -27,14 +27,14 @@ begin
 
   ###################
 
-  s = "Yaaaaaaay"
-  p3 = ->(){ s.upcase }
+  s1 = "Yaaaaaaay"
+  p3 = ->(){ s1.upcase }
   Ractor.make_shareable(p3)
   # Ractor::IsolationError
   # p3 is referring unshareable objects
 
-  s = "Boooooooo".freeze
-  p4 = ->(){ s.upcase }
+  s2 = "Boooooooo".freeze
+  p4 = ->(){ s2.upcase }
   Ractor.make_shareable(p4)
   # OK
 

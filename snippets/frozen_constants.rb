@@ -13,7 +13,7 @@
   end
 
 r1 = Ractor.new {
-  p(yay: Yay::VALUE)
+  p(yay: Yay::VALUE5)
 }
 
 begin
