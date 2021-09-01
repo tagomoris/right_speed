@@ -154,7 +154,6 @@ module RightSpeed
         while @reading && !@conn.eof?
           @parser << @conn.readline
         end
-        @conn.close # TODO: keep-alive?
       end
 
       def on_headers_complete(headers)

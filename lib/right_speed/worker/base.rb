@@ -8,11 +8,14 @@ module RightSpeed
         @id = id
         @handler = handler
         @ractor = nil
-        # TODO: initialization of webapp
+      end
+
+      def ractor
+        @ractor
       end
 
       def stop
-        @ractor # terminate if possible
+        @ractor # TODO: terminate if possible
       end
     end
   end

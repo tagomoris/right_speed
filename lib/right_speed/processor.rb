@@ -4,6 +4,7 @@ require 'rack/builder'
 
 require_relative 'worker/accepter'
 require_relative 'worker/reader'
+require_relative 'connection_closer'
 
 module RightSpeed
   module Processor
@@ -39,7 +40,7 @@ module RightSpeed
     end
 
     class Base
-      def initialize(workers)
+      def initialize(workers, handler)
         raise "BUG: use implementation class"
       end
 
@@ -67,6 +68,7 @@ module RightSpeed
         @worker_num = workers
         @handler = handler
         @workers = workers.times.map{|i| Worker::Reader.new(id: i, handler: @handler)}
+        @closer = ConnectionCloser.new
         @counter = 0
       end
 
@@ -76,6 +78,7 @@ module RightSpeed
 
       def run
         @workers.each{|w| w.run}
+        @closer.run(@workers.map{|w| w.ractor})
         @listener.run(self)
       end
 
@@ -107,6 +110,7 @@ module RightSpeed
         @workers.each do |w|
           w.run
         end
+        # TODO: connection closer
       end
 
       def wait
