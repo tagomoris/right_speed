@@ -4,8 +4,8 @@ require_relative "logger"
 
 module RightSpeed
   module Listener
-    def self.setup(listener_type:, host:, port:, backlog: nil)
-      case listener_type
+    def self.setup(worker_type:, host:, port:, backlog: nil)
+      case worker_type
       when :roundrobin
         RoundRobinListener.new(host, port, backlog)
       # TODO: :fair

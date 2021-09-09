@@ -19,7 +19,7 @@ module RightSpeed
       handler = Ractor.make_shareable(Handler.new(app))
       case worker_type
       when :roundrobin
-        ReadProcessor.new(workers, handler)
+        RoundRobinProcessor.new(workers, handler)
       # TODO: :fair
       when :accept
         AcceptProcessor.new(workers, handler)
