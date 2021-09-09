@@ -26,10 +26,8 @@ module RightSpeed
     DEFAULT_PORT = Server::DEFAULT_PORT
     DEFAULT_WORKERS = Env.processors
     DEFAULT_WORKER_TYPE = Server::DEFAULT_WORKER_TYPE
-    DEFAULT_LISTENER_TYPE = Server::DEFAULT_LISTENER_TYPE
 
     AVAILABLE_WORKER_TYPES = Server::AVAILABLE_WORKER_TYPES.map(:to_s).join('/')
-    AVAILABLE_LISTENER_TYPES = Server::AVAILABLE_LISTENER_TYPES.map(:to_s).join('/')
 
     def self.show_help(error: false, error_message: nil)
       STDERR.puts(error_message, "\n") if error_message

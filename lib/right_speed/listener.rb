@@ -8,6 +8,7 @@ module RightSpeed
       case listener_type
       when :roundrobin
         RoundRobinListener.new(host, port, backlog)
+      # TODO: :fair
       else
         SimpleListener.new(host, port, backlog)
       end

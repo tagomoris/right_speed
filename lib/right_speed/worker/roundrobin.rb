@@ -3,7 +3,7 @@ require_relative "../logger"
 
 module RightSpeed
   module Worker
-    class Reader < Base
+    class RoundRobin < Base
       def run
         @ractor = Ractor.new(@id, @handler) do |id, handler|
           logger = RightSpeed.logger

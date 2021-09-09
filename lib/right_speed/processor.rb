@@ -3,7 +3,7 @@
 require 'rack/builder'
 
 require_relative 'worker/accepter'
-require_relative 'worker/reader'
+require_relative 'worker/roundrobin'
 require_relative 'connection_closer'
 
 module RightSpeed
@@ -18,8 +18,9 @@ module RightSpeed
             end
       handler = Ractor.make_shareable(Handler.new(app))
       case worker_type
-      when :read
+      when :roundrobin
         ReadProcessor.new(workers, handler)
+      # TODO: :fair
       when :accept
         AcceptProcessor.new(workers, handler)
       else
@@ -63,11 +64,11 @@ module RightSpeed
       end
     end
 
-    class ReadProcessor < Base
+    class RoundRobinProcessor < Base
       def initialize(workers, handler)
         @worker_num = workers
         @handler = handler
-        @workers = workers.times.map{|i| Worker::Reader.new(id: i, handler: @handler)}
+        @workers = workers.times.map{|i| Worker::RoundRobin.new(id: i, handler: @handler)}
         @closer = ConnectionCloser.new
         @counter = 0
       end

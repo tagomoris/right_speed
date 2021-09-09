@@ -15,12 +15,10 @@ module RightSpeed
   class Server
     DEFAULT_HOST = "127.0.0.1"
     DEFAULT_PORT = 8080
-    DEFAULT_WORKER_TYPE = :read
+    DEFAULT_WORKER_TYPE = :roundrobin
     DEFAULT_WORKERS = Env.processors
-    DEFAULT_SCHEDULER_TYPE = :roundrobin
 
-    AVAILABLE_WORKER_TYPES = [:read, :accept]
-    AVAILABLE_LISTENER_TYPES = [:roundrobin, :fair]
+    AVAILABLE_WORKER_TYPES = [:roundrobin, :fair, :accept]
 
     attr_reader :config_hooks
 
@@ -38,10 +36,6 @@ module RightSpeed
       @app = app
       @workers = workers
       @worker_type = worker_type
-      @listener_type = case @worker_type
-                       when :read then scheduler_type
-                       else :listen
-                       end
       @backlog = backlog
       @config_hooks = []
       @logger = nil
@@ -63,7 +57,7 @@ module RightSpeed
 
       begin
         processor = Processor.setup(app: @app, worker_type: @worker_type, workers: @workers)
-        listener = Listener.setup(listener_type: @listener_type, host: @host, port: @port, backlog: nil)
+        listener = Listener.setup(worker_type: @worker_type, host: @host, port: @port, backlog: nil)
         processor.configure(listener: listener)
         processor.run
         listener.wait
