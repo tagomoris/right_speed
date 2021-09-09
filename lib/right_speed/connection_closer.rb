@@ -4,6 +4,10 @@ require_relative "logger"
 
 module RightSpeed
   class ConnectionCloser
+    # This class was introduced to serialize closing connections
+    # (instead of closing those in each Ractor) to try to avoid SEGV.
+    # But SEGV is still happening, so this class may not be valueable.
+
     def run(workers)
       @ractor = Ractor.new(workers) do |workers|
         logger = RightSpeed.logger
