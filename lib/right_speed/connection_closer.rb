@@ -23,5 +23,9 @@ module RightSpeed
         logger.error { "Unexpected error, #{e.class}:#{e.message}" }
       end
     end
+
+    def wait
+      @ractor.take
+    end
   end
 end

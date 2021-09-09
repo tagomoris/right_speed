@@ -8,7 +8,8 @@ module RightSpeed
       case worker_type
       when :roundrobin
         RoundRobinListener.new(host, port, backlog)
-      # TODO: :fair
+      when :fair
+        FairListener.new(host, port, backlog)
       else
         SimpleListener.new(host, port, backlog)
       end
@@ -44,6 +45,8 @@ module RightSpeed
     end
 
     class RoundRobinListener < SimpleListener
+      attr_reader :ractor
+
       def run(processor)
         @running = true
         @ractor = Ractor.new(@host, @port, @backlog, processor) do |host, port, backlog, processor|
@@ -64,6 +67,12 @@ module RightSpeed
       def stop
         @running = false
         @ractor = nil # TODO: terminate the Ractor if possible
+      end
+    end
+
+    class FairListener < RoundRobinListener
+      def wait
+        # nothing to wait - @ractor.take consumes accepted connections unexpectedly
       end
     end
   end

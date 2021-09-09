@@ -3,6 +3,7 @@
 require 'rack/builder'
 
 require_relative 'worker/accepter'
+require_relative 'worker/fair'
 require_relative 'worker/roundrobin'
 require_relative 'connection_closer'
 
@@ -20,7 +21,8 @@ module RightSpeed
       case worker_type
       when :roundrobin
         RoundRobinProcessor.new(workers, handler)
-      # TODO: :fair
+      when :fair
+        FairProcessor.new(workers, handler)
       when :accept
         AcceptProcessor.new(workers, handler)
       else
@@ -90,6 +92,35 @@ module RightSpeed
 
       def wait
         @workers.each{|w| w.wait}
+        @closer.wait
+      end
+    end
+
+    class FairProcessor < Base
+      def initialize(workers, handler)
+        @worker_num = workers
+        @handler = handler
+        @workers = workers.times.map{|i| Worker::Fair.new(id: i, handler: @handler)}
+        @closer = ConnectionCloser.new
+      end
+
+      def configure(listener:)
+        @listener = listener
+      end
+
+      def run
+        @listener.run(self)
+        @workers.each{|w| w.run(@listener.ractor)}
+        @closer.run(@workers.map{|w| w.ractor})
+      end
+
+      def process(conn)
+        Ractor.yield(conn, move: true)
+      end
+
+      def wait
+        # listener, workers are using those outgoing to pass connections
+        @closer.wait
       end
     end
 
