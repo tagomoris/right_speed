@@ -27,7 +27,7 @@ module RightSpeed
     DEFAULT_WORKERS = Env.processors
     DEFAULT_WORKER_TYPE = Server::DEFAULT_WORKER_TYPE
 
-    AVAILABLE_WORKER_TYPES = Server::AVAILABLE_WORKER_TYPES.map(:to_s).join('/')
+    AVAILABLE_WORKER_TYPES = Server::AVAILABLE_WORKER_TYPES.map(&:to_s).join('/')
 
     def self.show_help(error: false, error_message: nil)
       STDERR.puts(error_message, "\n") if error_message
