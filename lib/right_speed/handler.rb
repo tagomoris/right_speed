@@ -129,6 +129,8 @@ module RightSpeed
     end
 
     class Session
+      READ_CHUNK_LENGTH = 1024
+
       attr_reader :logger
 
       def initialize(handler, conn)
@@ -152,7 +154,7 @@ module RightSpeed
 
       def process
         while @reading && !@conn.eof?
-          @parser << @conn.readline
+          @parser << @conn.readpartial(READ_CHUNK_LENGTH)
         end
       end
 
