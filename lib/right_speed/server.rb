@@ -28,7 +28,6 @@ module RightSpeed
           port: DEFAULT_PORT,
           workers: DEFAULT_WORKERS,
           worker_type: DEFAULT_WORKER_TYPE,
-          scheduler_type: DEFAULT_SCHEDULER_TYPE,
           backlog: nil
         )
       @host = host
