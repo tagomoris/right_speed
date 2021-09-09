@@ -17,6 +17,10 @@ module RightSpeed
     DEFAULT_PORT = 8080
     DEFAULT_WORKER_TYPE = :read
     DEFAULT_WORKERS = Env.processors
+    DEFAULT_SCHEDULER_TYPE = :roundrobin
+
+    AVAILABLE_WORKER_TYPES = [:read, :accept]
+    AVAILABLE_LISTENER_TYPES = [:roundrobin, :fair]
 
     attr_reader :config_hooks
 
@@ -26,6 +30,7 @@ module RightSpeed
           port: DEFAULT_PORT,
           workers: DEFAULT_WORKERS,
           worker_type: DEFAULT_WORKER_TYPE,
+          scheduler_type: DEFAULT_SCHEDULER_TYPE,
           backlog: nil
         )
       @host = host
@@ -34,10 +39,8 @@ module RightSpeed
       @workers = workers
       @worker_type = worker_type
       @listener_type = case @worker_type
-                       when :read
-                         :accept
-                       else
-                         :listen
+                       when :read then scheduler_type
+                       else :listen
                        end
       @backlog = backlog
       @config_hooks = []

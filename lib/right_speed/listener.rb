@@ -6,8 +6,8 @@ module RightSpeed
   module Listener
     def self.setup(listener_type:, host:, port:, backlog: nil)
       case listener_type
-      when :accept
-        AcceptListener.new(host, port, backlog)
+      when :roundrobin
+        RoundRobinListener.new(host, port, backlog)
       else
         SimpleListener.new(host, port, backlog)
       end
@@ -42,7 +42,7 @@ module RightSpeed
       end
     end
 
-    class AcceptListener < SimpleListener
+    class RoundRobinListener < SimpleListener
       def run(processor)
         @running = true
         @ractor = Ractor.new(@host, @port, @backlog, processor) do |host, port, backlog, processor|
@@ -51,10 +51,6 @@ module RightSpeed
           sock.listen(backlog) if backlog
           logger.info { "listening #{host}:#{port}" }
           while conn = sock.accept
-            # logger.debug {
-            #   _, peer_port, _, peer_addr = conn.peeraddr # proto, port, hostname, ipaddr
-            #   "accepted a connection on #{host}:#{port}, client: #{peer_addr}:#{peer_port}"
-            # }
             processor.process(conn)
           end
         end
