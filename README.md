@@ -12,6 +12,11 @@ Currently, RightSpeed supports the very limited set of Rack protocol specificati
 * Handling multipart contents flexisbly (using `rack.multipart.buffer_size` nor `rack.multipart.tempfile_factory`)
 * [Hijacking](https://github.com/rack/rack/blob/master/SPEC.rdoc#label-Hijacking)
 
+## Changelog
+
+* v0.1.0:
+  * The first release just before RubyKaigi Takeout 2021
+
 ## Usage
 
 Use the latest Ruby 3.x release!
