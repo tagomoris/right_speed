@@ -25,7 +25,7 @@ module RightSpeed
         @sock = nil
       end
 
-      def run(_processor)
+      def run
         @running = true
         @sock = TCPServer.open(@host, @port)
         @sock.listen(@backlog) if @backlog

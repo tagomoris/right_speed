@@ -129,24 +129,22 @@ module RightSpeed
         @worker_num = workers
         @handler = handler
         @workers = workers.times.map{|i| Worker::Accepter.new(id: i, handler: @handler) }
+        @closer = ConnectionCloser.new
       end
 
       def configure(listener:)
         @listener = listener
-        @workers.each do |w|
-          w.configure(listener.sock)
-        end
       end
 
       def run
-        @workers.each do |w|
-          w.run
-        end
-        # TODO: connection closer
+        @listener.run
+        @workers.each{|w| w.run(@listener.sock)}
+        @closer.run(@workers.map{|w| w.ractor})
       end
 
       def wait
-        @workers.each{|w| w.wait}
+        # workers are using those outgoing to pass connections
+        @closer.wait
       end
     end
   end
