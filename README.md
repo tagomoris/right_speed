@@ -35,8 +35,7 @@ Install `right_speed` by `gem` command (`gem i right_speed`), then use it direct
 ```
 $ right_speed -c config.ru -p 8080 --workers 8
 
-# See right_speed --help for full options:
-$ bundle exec ruby bin/right_speed --help
+$ right_speed --help
 Usage: right_speed [options]
 
 OPTIONS
