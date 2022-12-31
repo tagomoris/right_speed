@@ -11,7 +11,11 @@ module Rack
 
         host = options.delete(:Host) || default_host
         port = options.delete(:Port) || 8080
-        workers = options.delete(:Workers) || ::RightSpeed::Env.processors
+        workers = begin
+          Integer(options.delete(:Workers), 10)
+        rescue ArgumentError,TypeError
+          ::RightSpeed::Env.processors
+        end
         server = ::RightSpeed::Server.new(app: app, host: host, port: port, workers: workers)
 
         yield server if block_given?
